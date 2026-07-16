@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Bot",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}\\main.py",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "python": "C:\\Users\\tidic\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+            "envFile": "${workspaceFolder}\\.env",
+            "cwd": "${workspaceFolder}",
+            "justMyCode": true
+        }
+    ]
+}
