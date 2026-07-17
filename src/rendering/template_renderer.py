@@ -16,7 +16,11 @@ LANGUAGE_CHOICES = {
     "ru": "Russian",
 }
 
-FIELD_ORDER = tuple(range(1, 14))
+TEMPLATE_FIELD_ORDER = {
+    1: tuple(range(1, 14)),
+    2: tuple(range(1, 8)),
+    3: tuple(range(1, 12)),
+}
 
 
 @dataclass(frozen=True)
@@ -36,6 +40,10 @@ class FieldSpec:
     box: tuple[int, int, int, int]
     style: str
     prompt: str
+    background_text: str | None = None
+    background_fill: tuple[int, int, int, int] | None = None
+    background_radius: int = 0
+    background_padding: tuple[int, int] = (0, 0)
 
 
 TEXT_STYLES = {
@@ -51,6 +59,45 @@ TEXT_STYLES = {
     "footnote": TextStyle("regular", 10, (125, 112, 60, 255), wrap=True, line_spacing=1),
     "button_primary": TextStyle("bold", 11, (255, 255, 255, 255), wrap=False, line_spacing=0, tracking=0.2),
     "button_secondary": TextStyle("bold", 11, (49, 49, 57, 255), wrap=False, line_spacing=0, tracking=0.2),
+    
+    "code2": TextStyle("medium", 15, (151, 153, 162, 255), wrap=False, line_spacing=0,),
+    "name": TextStyle("bold", 15, (12, 15, 22, 255), wrap=False, line_spacing=0, ),
+    "segment": TextStyle("medium", 15, (54, 131, 121, 255), wrap=False, line_spacing=0, ),
+    "status2": TextStyle("bold", 13, (46, 100, 68, 255), wrap=False, line_spacing=0, align="center", valign="middle"),
+    "amount": TextStyle("bold", 15, (31, 31, 36, 255), wrap=False, line_spacing=0, ),
+    "count": TextStyle("medium", 15, (116, 116, 124, 255), wrap=False, line_spacing=0, ),
+    "percent": TextStyle("bold", 15, (14, 12, 25, 255), wrap=False, line_spacing=0,),
+
+    "t3_label": TextStyle("bold", 9, (194, 160, 78, 255), wrap=False, line_spacing=0, tracking=1.0),
+    "t3_title": TextStyle("bold", 21, (255, 255, 255, 255), wrap=True, line_spacing=1.5, tracking=0.1),
+    "t3_body": TextStyle("regular", 10, (179, 188, 205, 255), wrap=True, line_spacing=1.5, tracking=0.2),
+    "t3_card_label": TextStyle("medium", 9, (123, 128, 138, 255), wrap=False, line_spacing=0, tracking=0.5),
+    "t3_card_value": TextStyle("bold", 17, (34, 34, 39, 255), wrap=False, line_spacing=0, tracking=0.7),
+    "t3_card_sub": TextStyle("medium", 9, (123, 128, 138, 255), wrap=False, line_spacing=0, tracking=0.5),
+    "t3_section": TextStyle("bold", 10, (36, 40, 46, 255), wrap=False, line_spacing=0, tracking=0.8),
+    "t3_section_body": TextStyle("regular", 10, (62, 67, 75, 255), wrap=True, line_spacing=4),
+    "t3_button": TextStyle("bold", 11, (28, 28, 32, 255), wrap=False, line_spacing=0),
+    
+}
+
+
+STATUS_BADGE_STYLES = {
+    "blue": {
+        "fill": (214, 233, 255, 255),
+        "text": (31, 104, 205, 255),
+    },
+    "yellow": {
+        "fill": (255, 240, 199, 255),
+        "text": (201, 142, 16, 255),
+    },
+    "red": {
+        "fill": (255, 226, 223, 255),
+        "text": (209, 69, 57, 255),
+    },
+    "green": {
+        "fill": (218, 253, 231, 255),
+        "text": (46, 100, 68, 255),
+    },
 }
 
 
@@ -69,7 +116,37 @@ TEMPLATE_LAYOUTS = {
         11: FieldSpec((433, 521, 854, 551), "footnote", "11"),
         12: FieldSpec((465, 596, 685, 607), "button_primary", "12"),
         13: FieldSpec((749, 596, 860, 608), "button_secondary", "13"),
-    }
+    },
+    2: {
+        1: FieldSpec((40, 88, 149, 108), "code2", "1"),
+        2: FieldSpec((211, 88, 404, 108), "name", "2"),
+        3: FieldSpec((450, 88, 554, 108), "segment", "3"),
+        4: FieldSpec(
+            (572, 81, 707, 110),
+            "status2",
+            "4",
+            background_text="Genehmigt",
+            background_fill=STATUS_BADGE_STYLES["green"]["fill"],
+            background_radius=15,
+            background_padding=(14, 7),
+        ),
+        5: FieldSpec((774, 87, 910, 108), "amount", "5"),
+        6: FieldSpec((934, 87, 968, 108), "count", "6"),
+        7: FieldSpec((1159, 88, 1218, 108), "percent", "7"),
+    },
+    3: {
+        1: FieldSpec((370, 129, 570, 141), "t3_label", "1"),
+        2: FieldSpec((370, 149, 903, 198), "t3_title", "2"),
+        3: FieldSpec((370, 213, 890, 241), "t3_body", "3"),
+        4: FieldSpec((386, 307, 625, 320), "t3_card_label", "4"),
+        5: FieldSpec((386, 322, 625, 353), "t3_card_value", "5"),
+        6: FieldSpec((666, 307, 906, 316), "t3_card_label", "6"),
+        7: FieldSpec((666, 322, 795, 378), "t3_card_value", "7"),
+        8: FieldSpec((666, 347, 820, 393), "t3_card_sub", "8"),
+        9: FieldSpec((392, 409, 903, 425), "t3_section", "9"),
+        10: FieldSpec((392, 432, 895, 538), "t3_section_body", "10"),
+        11: FieldSpec((850, 592, 909, 603), "t3_button", "11"),
+    },
 }
 
 
@@ -104,6 +181,10 @@ FONT_PATTERNS = {
 
 def get_template_path(language: str, template_number: int) -> Path:
     return CONTENT_DIR / language / f"template{template_number}.png"
+
+
+def get_field_order(template_number: int) -> tuple[int, ...]:
+    return TEMPLATE_FIELD_ORDER.get(template_number, ())
 
 
 def get_example_path(language: str, template_number: int) -> Path | None:
@@ -267,6 +348,51 @@ def draw_text_in_box(
     draw_tracked_text(draw, (x, y), resolved_text, font, style.fill, style.line_spacing, style.tracking)
 
 
+def draw_field(
+    draw: ImageDraw.ImageDraw,
+    spec: FieldSpec,
+    text: str,
+    style: TextStyle,
+    background_fill: tuple[int, int, int, int] | None = None,
+) -> None:
+    actual_background = background_fill if background_fill is not None else spec.background_fill
+    if actual_background is None:
+        draw_text_in_box(draw, spec.box, text, style)
+        return
+
+    x1, y1, x2, y2 = spec.box
+    max_width = x2 - x1
+    max_height = y2 - y1
+    pad_x, pad_y = spec.background_padding
+
+    def draw_badge(badge_text: str, text_fill: tuple[int, int, int, int]) -> None:
+        font, resolved_text, _ = resolve_text(draw, badge_text, style, max_width, max_height)
+        lines = resolved_text.splitlines() if resolved_text else [""]
+        text_w = max((measure_line_width(draw, line, font, style.tracking) for line in lines), default=0)
+        ascent, descent = font.getmetrics()
+        text_h = len(lines) * (ascent + descent) + max(0, len(lines) - 1) * style.line_spacing
+
+        pill_w = text_w + pad_x * 2
+        pill_h = text_h + pad_y * 2
+        pill_x = x1 + max(0, (max_width - pill_w) / 2)
+        pill_y = y1 + max(0, (max_height - pill_h) / 2)
+
+        draw.rounded_rectangle(
+            (pill_x, pill_y, pill_x + pill_w, pill_y + pill_h),
+            radius=spec.background_radius,
+            fill=actual_background,
+        )
+
+        text_x = pill_x + (pill_w - text_w) / 2
+        text_y = pill_y + (pill_h - text_h) / 2
+        draw_tracked_text(draw, (text_x, text_y), resolved_text, font, text_fill, style.line_spacing, style.tracking)
+
+    reference_text = spec.background_text if spec.background_text is not None else text
+    if spec.background_text is not None:
+        draw_badge(reference_text, actual_background)
+    draw_badge(text, style.fill)
+
+
 def resolve_text(
     draw: ImageDraw.ImageDraw,
     text: str,
@@ -307,6 +433,7 @@ def render_template_image_with_overrides(
     template_number: int,
     values: dict[int, str],
     fill_overrides: dict[int, tuple[int, int, int, int]] | None = None,
+    background_overrides: dict[int, tuple[int, int, int, int]] | None = None,
 ) -> Image.Image:
     template_path = get_template_path(language, template_number)
     if not template_path.exists():
@@ -316,7 +443,7 @@ def render_template_image_with_overrides(
     draw = ImageDraw.Draw(image)
 
     layout = TEMPLATE_LAYOUTS[template_number]
-    for field_number in FIELD_ORDER:
+    for field_number in get_field_order(template_number):
         spec = layout[field_number]
         style = TEXT_STYLES[spec.style]
         if fill_overrides and field_number in fill_overrides:
@@ -330,6 +457,7 @@ def render_template_image_with_overrides(
                 align=style.align,
                 valign=style.valign,
             )
-        draw_text_in_box(draw, spec.box, values.get(field_number, ""), style)
+        background_fill = background_overrides.get(field_number) if background_overrides else None
+        draw_field(draw, spec, values.get(field_number, ""), style, background_fill=background_fill)
 
     return image
